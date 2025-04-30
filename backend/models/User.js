@@ -6,8 +6,10 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['user', 'expert', 'admin'], default: 'user' },
   profilePicture: String,
-  bio: String,
-  location: String,
+  otherdetails: {
+    bio: String,
+    location: String
+  },
 
   // ✅ Expert-specific fields
   expertiseTags: [{ type: String }],
@@ -22,8 +24,11 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpires: Date,
   emailNotifications: { type: Boolean, default: true },
   loginAttempts: { type: Number, default: 0 },
-  isBlocked: { type: Boolean, default: false },
-  isDeleted: { type: Boolean, default: false },
+  BlockedStatus:  {
+    isBlocked: { type: Boolean, default: false },
+    isBlockedreason: String,
+    blockedAt: { type: Date, default: Date.now }
+  },
   lastLoginAt: Date,
 }, { timestamps: true });
 
