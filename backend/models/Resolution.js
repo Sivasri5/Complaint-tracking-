@@ -10,6 +10,5 @@ const resolutionSchema = new mongoose.Schema({
   averageRating: { type: Number, default: 0 },
   totalRatings: { type: Number, default: 0 },
   isClosed: { type: Boolean, default: false }
-}, { timestamps: true }); // ✅ createdAt = when resolution was posted
-
+}, { timestamps: true }); 
 module.exports = mongoose.model('Resolution', resolutionSchema);
