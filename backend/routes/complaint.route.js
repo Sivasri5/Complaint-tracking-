@@ -1,24 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const Complaint = require('../models/Complaint');
+const {
+    createComplaint,
+    getComplaints,
+    getComplaintById,
+    updateComplaint,
+    deleteComplaint
+} = require('../controllers/complaint.controller');
 
-router.get('/', async (req, res) => {
-    try {
-        const complaints = await Complaint.find();
-        res.json(complaints);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+// Create a complaint
+router.post('/', createComplaint);
 
-router.post('/', async (req, res) => {
-    const complaint = new Complaint(req.body);
-    try {
-        const newComplaint = await complaint.save();
-        res.status(201).json(newComplaint);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
+// Get all complaints
+router.get('/', getComplaints);
+
+// Get a complaint by ID
+router.get('/:id', getComplaintById);
+
+// Update a complaint
+router.put('/:id', updateComplaint);
+
+// Soft delete a complaint
+router.delete('/:id', deleteComplaint);
 
 module.exports = router;
