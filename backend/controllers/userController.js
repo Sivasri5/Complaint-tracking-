@@ -16,4 +16,14 @@ const fetchUserById = async (req, res) => {
   }
 };
 
-module.exports = { fetchUserById };
+// Fetch all users (accessible to all authenticated users)
+const fetchAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-passwordHash"); // Exclude passwordHash
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { fetchUserById, fetchAllUsers };

@@ -2,9 +2,7 @@ const User = require("../models/User");
 
 // Block a user (admin only)
 const blockUser = async (req, res) => {
-  if (!req.user.isAdmin) {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
+
 
   try {
     const { userId } = req.body;
@@ -25,9 +23,6 @@ const blockUser = async (req, res) => {
 
 // Unblock a user (admin only)
 const unblockUser = async (req, res) => {
-  if (!req.user.isAdmin) {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
 
   try {
     const { userId } = req.body;
