@@ -13,7 +13,7 @@ const ComplaintSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["open", "in_progress", "closed"],
+    enum: ["open", "in_progress", "closed","resolved"],
     default: "open",
     index: true,
   },

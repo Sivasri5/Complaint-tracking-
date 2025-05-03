@@ -2,13 +2,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const crypto = require("crypto");
+const sendEmail = require("../utils/emailUtil");
+const fs = require("fs").promises;
+const path = require("path");
 
 const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
     // Validate role against User model's enum
-    if (!["customer", "expert", "admin"].includes(role)) {
+    if (!["customer", "expert"].includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
     }
 
@@ -72,14 +75,19 @@ const sendOtp = async (req, res) => {
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     user.verification.otp = otp;
     user.verification.otpExpiry = otpExpiry;
     await user.save();
 
-    // TODO: Integrate email service to send OTP
-    console.log(`OTP for ${email}: ${otp}`);
+    // Read HTML template
+    const templatePath = path.join(__dirname, "../templates/otpEmail.html");
+    let emailTemplate = await fs.readFile(templatePath, "utf8");
+    emailTemplate = emailTemplate.replace("{{otp}}", otp);
+
+    // Send styled OTP via email
+    await sendEmail(email, "Your OTP Code", emailTemplate, true);
 
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
