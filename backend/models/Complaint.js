@@ -1,20 +1,50 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const complaintSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+// Complaint Model
+const ComplaintSchema = new Schema({
+  title: { type: String, required: true, trim: true },
   description: { type: String, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  tags: [String],
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    index: true,
+  },
   status: {
     type: String,
-    enum: ['open', 'resolved', 'closed', 'requeried'],
-    default: 'open'
+    enum: ["open", "in_progress", "closed","resolved"],
+    default: "open",
+    index: true,
   },
-  resolution: { type: mongoose.Schema.Types.ObjectId, ref: 'Resolution' },
-  Deleted: {
-    isDeleted: { type: Boolean, default: false },
-    DeletedAt: { type: Date, default: Date.now }
-  }
-}, { timestamps: true }); 
+  assignedTo: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    index: true,
+  },
+  conversations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
+      index: true,
+    },
+  ],
+  tags: [{ type: String, index: true }],
+  createdAt: { type: Date, default: Date.now, index: true },
+  updatedAt: { type: Date, index: true },
+});
 
-module.exports = mongoose.model('Complaint', complaintSchema);
+// Middleware and Hooks
+ComplaintSchema.post("save", async function (complaint) {
+  await User.findByIdAndUpdate(complaint.createdBy, {
+    $addToSet: { raisedComplaints: complaint._id },
+  });
+});
+
+ComplaintSchema.index({ createdBy: 1, status: 1 });
+ComplaintSchema.index({ assignedTo: 1, status: 1 });
+ComplaintSchema.index({ tags: 1, status: 1 });
+
+const Complaint = mongoose.model("Complaint", ComplaintSchema);
+
+module.exports = Complaint;

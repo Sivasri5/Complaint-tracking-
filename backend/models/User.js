@@ -1,35 +1,70 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+// User Model
+const UserSchema = new Schema({
   name: { type: String, required: true },
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ['user', 'expert', 'admin'], default: 'user' },
-  profilePicture: String,
-  otherdetails: {
-    bio: String,
-    location: String
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+    validate: {
+      validator: (v) => /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(v),
+      message: (props) => `${props.value} is not a valid email!`,
+    },
   },
-
-  // ✅ Expert-specific fields
-  expertiseTags: [{ type: String }],
-  averageRating: { type: Number, default: 0 },
-  totalRatings: { type: Number, default: 0 },
-  isVerifiedExpert: { type: Boolean, default: false }, // 👈 New Field
-
-  // ✅ Common fields
-  emailVerified: { type: Boolean, default: false },
-  emailVerificationToken: String,
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
-  emailNotifications: { type: Boolean, default: true },
-  loginAttempts: { type: Number, default: 0 },
-  BlockedStatus:  {
-    isBlocked: { type: Boolean, default: false },
-    isBlockedreason: String,
-    blockedAt: { type: Date, default: Date.now }
+  passwordHash: { type: String, required: true },
+  role: {
+    type: String,
+    enum: ["customer", "expert", "admin"],
+    required: true,
+    index: true,
   },
-  lastLoginAt: Date,
-}, { timestamps: true });
+  profile: {
+    avatar: String,
+    phone: {
+      type: String,
+      validate: {
+        validator: (v) =>
+          /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(v),
+        message: (props) => `${props.value} is not a valid phone number!`,
+      },
+    },
+  },
+  settings: {
+    emailNotifications: { type: Boolean, default: true },
+  },
+  expertRating: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5,
+    set: (v) => Math.round(v * 10) / 10, // Store 1 decimal place
+  },
+  raisedComplaints: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Complaint",
+      index: true,
+    },
+  ],
+  blocked: { type: Boolean, default: false, index: true },
+  createdAt: { type: Date, default: Date.now, index: true },
+  updatedAt: { type: Date, index: true },
+  verification: {
+    emailVerified: { type: Boolean, default: false },
+    otp: { type: String }, // Store OTP for email verification
+    otpExpiry: { type: Date }, // Expiry time for OTP
+    adminApproved: { type: Boolean, default: false }, // Admin approval for experts
+  },
+});
 
-module.exports = mongoose.model('User', userSchema);
+// Indexes
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ role: 1, blocked: 1 });
+UserSchema.index({ expertRating: -1 });
+
+const User = mongoose.model("User", UserSchema);
+
+module.exports = User;
