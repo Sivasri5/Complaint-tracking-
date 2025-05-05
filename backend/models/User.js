@@ -58,6 +58,9 @@ const UserSchema = new Schema({
     otpExpiry: { type: Date }, // Expiry time for OTP
     adminApproved: { type: Boolean, default: false }, // Admin approval for experts
   },
+  twoFactorEnabled: { type: Boolean, default: false },
+  twoFactorSecret: { type: String }, // Secret for 2FA
+  twoFactorValidated: { type: Boolean, default: false },
 });
 
 // Indexes

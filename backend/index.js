@@ -9,6 +9,7 @@ const reactionRoutes = require("./routes/reactionRoutes");
 const complaintRoutes = require("./routes/complaintRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const twoFactorRoutes = require("./routes/twoFactorRoutes");
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use("/api/reactions", reactionRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/2fa", twoFactorRoutes); // Add 2FA routes
 
 // Default route
 app.get("/", (req, res) => {
