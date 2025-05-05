@@ -3,20 +3,22 @@ const Complaint = require("../models/Complaint");
 const createComplaint = async (req, res) => {
   try {
     const { title, description } = req.body;
+    
     const complaint = new Complaint({
       title,
       description,
-      createdBy: req.user.id,
+      createdBy: req.user._id,
     });
 
     await complaint.save();
     res.status(201).json(complaint);
   } catch (error) {
+    console.error("Error creating complaint:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-const getComplaints = async (req, res) => {
+const getUserComplaints = async (req, res) => {
   try {
     const complaints = await Complaint.find({
       createdBy: req.user.id,
@@ -79,7 +81,7 @@ const updateComplaint = async (req, res) => {
 
 module.exports = {
   createComplaint,
-  getComplaints,
+  getUserComplaints,
   getAllComplaints,
   getComplaintDetails,
   updateComplaint,

@@ -4,7 +4,7 @@ const User = require("../models/User");
 const authenticate = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    console.log(token); // Log the token for debugging
+
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -35,4 +35,11 @@ const isTwoFactorValidated = (req, res, next) => {
   next();
 };
 
-module.exports = { authenticate, isAdmin, isTwoFactorValidated };
+const isExpert = (req, res, next) => {
+  if (req.user.role !== "expert") {
+    return res.status(403).json({ message: "Access denied. Experts only." });
+  }
+  next();
+};
+
+module.exports = { authenticate, isAdmin, isTwoFactorValidated, isExpert };
