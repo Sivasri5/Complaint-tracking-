@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const sendEmail = require("../utils/emailUtil");
 const fs = require("fs").promises;
 const path = require("path");
+const speakeasy = require("speakeasy");
 
 const register = async (req, res) => {
   try {
@@ -59,7 +60,14 @@ const login = async (req, res) => {
       }
     );
 
-    res.status(200).json({ token });
+    if (user.twoFactorEnabled) {
+      
+      user.twoFactorValidated = false; // Mark 2FA as invalid
+      await user.save();
+    }
+
+    // If 2FA is not enabled, just send the token
+    res.status(200).json({ token, twoFactorEnabled: user.twoFactorEnabled });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -137,4 +145,39 @@ const approveExpert = async (req, res) => {
   }
 };
 
-module.exports = { register, login, sendOtp, verifyOtp, approveExpert };
+const validateTwoFactor = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const user = req.user;
+
+    if (!user.twoFactorEnabled) {
+      return res.status(400).json({ message: "2FA is not enabled." });
+    }
+
+    const isValid = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: "base32",
+      token,
+    });
+
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid 2FA token." });
+    }
+
+    user.twoFactorValidated = true;
+    await user.save();
+
+    res.status(200).json({ message: "2FA validated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  sendOtp,
+  verifyOtp,
+  approveExpert,
+  validateTwoFactor,
+};
