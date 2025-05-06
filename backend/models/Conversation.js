@@ -1,59 +1,60 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
 
 // Conversation Model
 const ConversationSchema = new Schema({
-    complaint: {
+  complaint: {
+    type: Schema.Types.ObjectId,
+    ref: "Complaint",
+    required: true,
+    index: true,
+  },
+  content: { type: String, required: true, trim: true },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    index: true,
+  },
+  type: {
+    type: String,
+    enum: ["query", "reply"],
+    default: "query",
+    index: true,
+  },
+  reactions: [
+    {
       type: Schema.Types.ObjectId,
-      ref: "Complaint",
-      required: true,
+      ref: "Reaction",
       index: true,
     },
-    content: { type: String, required: true, trim: true },
-    author: {
+  ],
+  comments: [
+    {
       type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: "Comment",
       index: true,
     },
-    type: {
-      type: String,
-      enum: ["query", "reply"],
-      default: "query",
-      index: true,
-    },
-    reactions: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Reaction",
-        index: true,
-      },
-    ],
-    comments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Comment",
-        index: true,
-      },
-    ],
-    createdAt: { type: Date, default: Date.now, index: true },
-  });
-  
-  // Middleware and Hooks
-  ConversationSchema.pre("save", async function (next) {
-    if (this.isNew) {
-      await Complaint.findByIdAndUpdate(this.complaint, {
-        $addToSet: { conversations: this._id },
-        $set: { updatedAt: new Date() },
-      });
-    }
-    next();
-  });
+  ],
+  createdAt: { type: Date, default: Date.now, index: true },
+})
 
-  ConversationSchema.index({ complaint: 1, createdAt: -1 });
+// Middleware and Hooks
+ConversationSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    // Import Complaint model here to avoid circular dependency
+    const Complaint = mongoose.model("Complaint")
+    
+    await Complaint.findByIdAndUpdate(this.complaint, {
+      $addToSet: { conversations: this._id },
+      $set: { updatedAt: new Date() },
+    })
+  }
+  next()
+})
 
-  const Conversation = mongoose.model("Conversation", ConversationSchema);
+ConversationSchema.index({ complaint: 1, createdAt: -1 })
 
- module.exports = Conversation;
-  
+const Conversation = mongoose.model("Conversation", ConversationSchema)
+
+module.exports = Conversation

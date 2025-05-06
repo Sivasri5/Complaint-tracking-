@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
 
 // User Model
 const UserSchema = new Schema({
@@ -8,7 +8,6 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    index: true,
     validate: {
       validator: (v) => /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(v),
       message: (props) => `${props.value} is not a valid email!`,
@@ -26,8 +25,7 @@ const UserSchema = new Schema({
     phone: {
       type: String,
       validate: {
-        validator: (v) =>
-          /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(v),
+        validator: (v) => /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(v),
         message: (props) => `${props.value} is not a valid phone number!`,
       },
     },
@@ -61,13 +59,12 @@ const UserSchema = new Schema({
   twoFactorEnabled: { type: Boolean, default: false },
   twoFactorSecret: { type: String }, // Secret for 2FA
   twoFactorValidated: { type: Boolean, default: false },
-});
+})
 
-// Indexes
-UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ role: 1, blocked: 1 });
-UserSchema.index({ expertRating: -1 });
+// Indexes - Remove duplicate index
+UserSchema.index({ role: 1, blocked: 1 })
+UserSchema.index({ expertRating: -1 })
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema)
 
-module.exports = User;
+module.exports = User

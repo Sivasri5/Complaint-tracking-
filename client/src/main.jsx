@@ -5,6 +5,9 @@ import { AuthProvider } from "./contexts/AuthContext"
 import App from "./App"
 import "./index.css"
 
+// Import Bootstrap JS
+import "bootstrap/dist/js/bootstrap.bundle.min.js"
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
