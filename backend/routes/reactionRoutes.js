@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express")
 const {
   addReaction,
   removeReaction,
@@ -7,16 +7,26 @@ const {
   getComments,
   markAsHelpful,
   removeHelpfulMark,
-} = require("../controllers/reactionController");
+} = require("../controllers/reactionController")
+const { addConversation, getConversationsByComplaint } = require("../controllers/conversationController")
+const { authenticate } = require("../middleware/authMiddleware")
 
-const router = express.Router();
+const router = express.Router()
 
-router.post("/reactions", addReaction);
-router.delete("/reactions/:conversationId", removeReaction);
-router.post("/comments", addComment);
-router.get("/:conversationId/reactions", getReactions);
-router.get("/:conversationId/comments", getComments);
-router.patch("/:conversationId/helpful", markAsHelpful);
-router.delete("/:conversationId/helpful", removeHelpfulMark);
+// Apply authentication middleware to all routes
+router.use(authenticate)
 
-module.exports = router;
+// Reaction routes
+router.post("/reactions", addReaction)
+router.delete("/reactions/:conversationId", removeReaction)
+router.post("/comments", addComment)
+router.get("/:conversationId/reactions", getReactions)
+router.get("/:conversationId/comments", getComments)
+router.patch("/:conversationId/helpful", markAsHelpful)
+router.delete("/:conversationId/helpful", removeHelpfulMark)
+
+// Conversation routes
+router.post("/conversations", addConversation)
+router.get("/:complaintId/conversations", getConversationsByComplaint)
+
+module.exports = router

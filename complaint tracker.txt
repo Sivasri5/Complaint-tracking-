@@ -1,0 +1,13 @@
+like the if the URL is /register it needs to ask for email and password if not the username and password is in the database then navigate to login page if it is already present then show a message that already used email like.
+ use jwt 
+if the  URL is /login then show login page on successful login navigate to dashboard 
+
+
+if the URL is /dashboard in that page on the header i need to have buttons to choose between user and expert dashboard 
+
+if the URL is /dashboard/user then it should have a button to add complaint button to add complaint and below that show the complaints of that user and if i click any one of the complaint then navigate to a chat like structure where i can see the chats of mine and the experts like WhatsApp group chat 
+and for the complaint and resolution any of the user and expert can like and comment for that add a like symbol button for all the chats and if i click that it should be liked and if i hover near show me the option to see likes if i click that i need to see who liked  and when and a comment box for the all chats anyone a]can give the comments and if i click view comments then i can see the comments and when the commented.
+
+if the URL is /dashboard/expert then show all the complaints initially and a button to see the resolved comments by the expert 
+in both side if i click the complaint cards then navigate to the belonging chat and the chat have the functionality structure where i can see the chats of mine and the experts like WhatsApp group chat 
+and for the complaint and resolution any of the user and expert can like and comment for that add a like symbol button for all the chats and if i click that it should be liked and if i hover near show me the option to see likes if i click that i need to see who liked  and when and a comment box for the all chats anyone a]can give the comments and if i click view comments then i can see the comments and when the commented.
