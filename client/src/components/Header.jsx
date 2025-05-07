@@ -1,59 +1,124 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+"use client"
+
+import { useState } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import { useAuth } from "../contexts/AuthContext"
+import "./Header.css"
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login")
+  }
+
+  // Check if the current route is active
+  const isActive = (path) => {
+    return location.pathname === path
+  }
 
   return (
-    <header className="bg-gray-900 shadow-lg border-b border-teal-500/20">
-      <div className="max-w-6xl mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-teal-400 hover:text-teal-300 transition-colors duration-200">
+    <header className="main-header">
+      <nav className="navbar navbar-expand-lg navbar-dark">
+        <div className="container">
+          <Link className="navbar-brand fw-bold" to="/dashboard">
+            <i className="bi bi-chat-dots-fill me-2"></i>
             Complaint Portal
-          </h1>
-          
-          {/* Mobile menu button */}
+          </Link>
+
           <button
-            className="md:hidden text-teal-400 hover:text-teal-300"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            <span className="navbar-toggler-icon"></span>
           </button>
 
-          {/* Desktop navigation */}
-          <nav className="hidden md:flex space-x-8 text-gray-300 text-lg">
-            <Link to="/" className="hover:text-teal-400 transition-colors duration-200 relative group">
-              Home
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-500 transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            <Link to="/complaints" className="hover:text-teal-400 transition-colors duration-200 relative group">
-              All Complaints
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-500 transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            <Link to="/contact" className="hover:text-teal-400 transition-colors duration-200 relative group">
-              Contact
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-500 transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          </nav>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav ms-auto">
+              {user ? (
+                <>
+                  <li className="nav-item">
+                    <Link to="/dashboard/user" className={`nav-link ${isActive("/dashboard/user") ? "active" : ""}`}>
+                      <i className="bi bi-person-fill me-1"></i>
+                      User Dashboard
+                    </Link>
+                  </li>
+
+                  {(user.role === "expert" || user.role === "admin") && (
+                    <li className="nav-item">
+                      <Link
+                        to="/dashboard/expert"
+                        className={`nav-link ${isActive("/dashboard/expert") ? "active" : ""}`}
+                      >
+                        <i className="bi bi-tools me-1"></i>
+                        Expert Dashboard
+                      </Link>
+                    </li>
+                  )}
+
+                  <li className="nav-item dropdown">
+                    <a
+                      className="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i className="bi bi-person-circle me-1"></i>
+                      {user.name}
+                    </a>
+                    <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                      <li>
+                        <div className="dropdown-item-text">
+                          <small className="d-block text-muted">Signed in as</small>
+                          <span className="fw-medium">{user.email}</span>
+                          <span className="badge bg-secondary ms-2">{user.role}</span>
+                        </div>
+                      </li>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                      <li>
+                        <button onClick={handleLogout} className="dropdown-item text-danger">
+                          <i className="bi bi-box-arrow-right me-2"></i>
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item">
+                    <Link to="/login" className={`nav-link ${isActive("/login") ? "active" : ""}`}>
+                      <i className="bi bi-box-arrow-in-right me-1"></i>
+                      Login
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/register" className={`nav-link ${isActive("/register") ? "active" : ""}`}>
+                      <i className="bi bi-person-plus-fill me-1"></i>
+                      Register
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
         </div>
-
-        {/* Mobile navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden mt-4 space-y-4 pb-4 border-t border-gray-700 pt-4">
-            <Link to="/" className="block text-gray-300 hover:text-teal-400 transition-colors duration-200 py-2">Home</Link>
-            <Link to="/complaints" className="block text-gray-300 hover:text-teal-400 transition-colors duration-200 py-2">All Complaints</Link>
-            <Link to="/contact" className="block text-gray-300 hover:text-teal-400 transition-colors duration-200 py-2">Contact</Link>
-          </nav>
-        )}
-      </div>
+      </nav>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
