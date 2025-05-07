@@ -4,6 +4,7 @@ const User = require("../models/User");
 const authenticate = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
+    console.log(token); // Log the token for debugging
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -27,6 +28,11 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
+const isTwoFactorValidated = (req, res, next) => {
+  if (req.user.twoFactorEnabled && !req.user.twoFactorValidated) {
+    return res.status(403).json({ message: "2FA validation required." });
+  }
+  next();
+};
 
-
-module.exports = { authenticate, isAdmin };
+module.exports = { authenticate, isAdmin, isTwoFactorValidated };

@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom"
+import ProtectedRoute from "./components/ProtectedRoute"
+import Header from "./components/Header"
+import Footer from "./components/Footer"
+import Register from "./pages/Register"
+import Login from "./pages/Login"
+import Dashboard from "./pages/Dashboard"
+import UserDashboard from "./pages/UserDashboard"
+import ExpertDashboard from "./pages/ExpertDashboard"
+import CreateComplaint from "./pages/CreateComplaint"
+import ComplaintDetail from "./pages/ComplaintDetail"
+import "./App.css"
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app-container">
+      <Header />
+      <main className="main-content">
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/user" element={<UserDashboard />} />
+            <Route path="/complaints/new" element={<CreateComplaint />} />
+            <Route path="/complaints/:id" element={<ComplaintDetail />} />
+          </Route>
+
+          {/* Expert-only routes */}
+          <Route element={<ProtectedRoute allowedRoles={["expert", "admin"]} />}>
+            <Route path="/dashboard/expert" element={<ExpertDashboard />} />
+          </Route>
+
+          {/* Redirect root to login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   )
 }
 
-export default App
+export default App;

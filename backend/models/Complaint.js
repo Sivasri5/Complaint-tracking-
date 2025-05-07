@@ -13,7 +13,7 @@ const ComplaintSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["open", "in_progress", "closed","resolved"],
+    enum: ["open", "in_progress", "closed", "resolved"],
     default: "open",
     index: true,
   },
@@ -36,6 +36,8 @@ const ComplaintSchema = new Schema({
 
 // Middleware and Hooks
 ComplaintSchema.post("save", async function (complaint) {
+  // Defer the require to avoid circular dependency issues:
+  const User = require("./User");
   await User.findByIdAndUpdate(complaint.createdBy, {
     $addToSet: { raisedComplaints: complaint._id },
   });
