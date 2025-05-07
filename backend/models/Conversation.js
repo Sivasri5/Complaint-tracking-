@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Complaint = require("./Complaint");
 const Schema = mongoose.Schema;
 
 
@@ -51,9 +52,9 @@ const ConversationSchema = new Schema({
     next();
   });
 
-  ConversationSchema.index({ complaint: 1, createdAt: -1 });
+ConversationSchema.index({ complaint: 1, createdAt: -1 });
 
-  const Conversation = mongoose.model("Conversation", ConversationSchema);
+const Conversation = mongoose.model("Conversation", ConversationSchema);
 
- module.exports = Conversation;
+module.exports = Conversation;
   

@@ -2,10 +2,9 @@ const Conversation = require("../models/Conversation");
 
 const addConversation = async (req, res) => {
   try {
-    const { complaintId, content, type } = req.body;
-    if(type==='reply' && req.user.role!=='expert'){
-      return res.status(403).json({ message: "Only experts can reply" });
-    }
+    const { complaintId, content } = req.body;
+    const type = req.user.role === 'expert' ? 'reply' : 'query';
+
     const conversation = new Conversation({
       complaint: complaintId,
       content,

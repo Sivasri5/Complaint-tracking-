@@ -10,6 +10,7 @@ const complaintRoutes = require("./routes/complaintRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const twoFactorRoutes = require("./routes/twoFactorRoutes");
+const conversationRoutes = require("./routes/conversationRoutes");
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use("/api/complaints", complaintRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/2fa", twoFactorRoutes); // Add 2FA routes
+app.use("/api/conversations", conversationRoutes);
 
 // Default route
 app.get("/", (req, res) => {
